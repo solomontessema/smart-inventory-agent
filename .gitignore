@@ -1,0 +1,14 @@
+# gitignore 
+# .gitignore
+venv/
+__pycache__/
+*.pyc
+.env
+logs/
+.vscode/
+.idea/
+.tox/
+.coverage
+.cache/
+*.log
+*.tmp
