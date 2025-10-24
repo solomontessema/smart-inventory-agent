@@ -4,7 +4,9 @@ from config import DB_PATH
 
 class SQLiteConnector:
     def __init__(self, db_path=DB_PATH):
-        self.conn = sqlite3.connect(db_path)
+
+        uri_path = f"file:///{db_path}"
+        self.conn = sqlite3.connect(uri_path, uri=True, check_same_thread=False)
         self.cursor = self.conn.cursor()
 
     def list_tables(self):
