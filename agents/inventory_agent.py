@@ -1,5 +1,4 @@
 
-
 from typing import Any, Dict
 from langchain_community.chat_models import ChatOpenAI
 from langchain.agents import Tool, AgentExecutor, create_react_agent
@@ -63,20 +62,20 @@ prompt_template = PromptTemplate(
     input_variables=["input", "chat_history", "agent_scratchpad", "tools", "tool_names", "AGENT_NAME", "BOSS_NAME"],
     template="""
 You are an inventory assistant named {AGENT_NAME}. The user is {BOSS_NAME}.
-Task: answer all inventory-related questions and perform actions as requested and log them. To see our database schema, use the Database Reader tool.
+Task: answer all inventory-related questions and perform actions as requested and log them. To see our database schema, use the 'Database Reader' tool.
  
 You have tools:
 {tools}
 
 Rules:
+- You must NEVER include a Final Answer and an Action in the same response.
+- If you have completed the task, first give the Final Answer and STOP.
+- In the next step, you may log the action using the Log Tracker tool.
 - Prefer ONE SQL that joins products with inventory, aggregates quantity, and filters total < threshold.
 - When writing SQL, write ONLY the SQL (no backticks/markdown/comments).
 - Always ground your Final Answer in the actual tool Observation.
 - If a tool fails, try a corrected attempt; do not conclude after an error.
 - Keep the final answer concise and helpful.
-- Do not include a Final Answer and an Action in the same response.
-- If you have completed the task, first give the Final Answer.
-- Then, in the next step, use the Log Tracker tool to record the summary.
 
 When using the Email Sender tool:
 - Format the body as professional HTML (use <p>, <ul>, <li>, <b>, <a> tags).
@@ -120,6 +119,8 @@ Action: Log Tracker
 Action Input: Task Completed | Identified low stock items and emailed summary to boss.
 
 
+
+
 Conversation history:
 {chat_history}
 
@@ -138,19 +139,23 @@ inventory_agent = AgentExecutor(
     agent=agent,
     tools=tools,
     memory=memory,
-    verbose=False,                
+    verbose=False,
     handle_parsing_errors=True,
-    max_iterations=6,              
-    return_intermediate_steps=True 
+    max_iterations=30,
+    return_intermediate_steps=False
 )
 
 # ---------------------------
 # Runner
 # ---------------------------
-def run_inventory_agent(user_input)-> Dict[str, Any]:
+def run_inventory_agent(user_input: str) -> str:
     result = inventory_agent.invoke({
         "input": user_input,
         "AGENT_NAME": AGENT_NAME,
         "BOSS_NAME": BOSS_NAME
     })
-    return result
+
+    final_answer = result.get("output", "")
+    if final_answer:
+        track_log_tool(f"Task Completed | {final_answer[:100]}")
+    return final_answer

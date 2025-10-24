@@ -10,4 +10,6 @@ AGENT_EMAIL_ADDRESS= os.getenv("AGENT_EMAIL_ADDRESS")
 AGENT_EMAIL_PASSWORD= os.getenv("AGENT_EMAIL_PASSWORD")  
 BOSS_NAME=os.getenv("BOSS_NAME")
 BOSS_EMAIL_ADDRESS=os.getenv("BOSS_EMAIL_ADDRESS")
-DB_PATH = "database/data.db"
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "database", "data.db")
