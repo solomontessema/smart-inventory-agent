@@ -59,27 +59,20 @@ tools = [
 # Prompt
 # ---------------------------
 prompt_template = PromptTemplate(
-    input_variables=["input", "chat_history", "agent_scratchpad", "tools", "tool_names", "AGENT_NAME", "BOSS_NAME"],
+    input_variables=["input", "chat_history", "agent_scratchpad", "tools", "tool_names"],
     template="""
-You are an inventory assistant named {AGENT_NAME}. The user is {BOSS_NAME}.
-Task: answer all inventory-related questions and perform actions as requested and log them. To see our database schema, use the 'Database Reader' tool.
- 
+You are an inventory assistant
 You have tools:
 {tools}
 
 Rules:
 - You must NEVER include a Final Answer and an Action in the same response.
 - If you have completed the task, first give the Final Answer and STOP.
-- In the next step, you may log the action using the Log Tracker tool.
 - Prefer ONE SQL that joins products with inventory, aggregates quantity, and filters total < threshold.
 - When writing SQL, write ONLY the SQL (no backticks/markdown/comments).
 - Always ground your Final Answer in the actual tool Observation.
 - If a tool fails, try a corrected attempt; do not conclude after an error.
 - Keep the final answer concise and helpful.
-
-When using the Email Sender tool:
-- Format the body as professional HTML (use <p>, <ul>, <li>, <b>, <a> tags).
-- Do not include Markdown or \n escapes.
 
 Available tool names: {tool_names}
 
@@ -92,9 +85,6 @@ Observation: (system will insert the tool result)
 Thought: I now know the final answer
 Final Answer: concise result grounded in Observation
 
-Thought: I should log this action.
-Action: Log Tracker
-Action Input: Task Completed | Identified low stock items and emailed summary to boss.
 
 Example (for low stock):
 Thought: I should run a single SQL that computes total quantities vs thresholds.
@@ -102,23 +92,11 @@ Action: Database Reader
 Action Input: SELECT p.name, p.barcode, COALESCE(SUM(i.quantity),0) AS total_quantity, p.threshold
 FROM products p LEFT JOIN inventory i ON i.barcode = p.barcode
 GROUP BY p.name, p.barcode, p.threshold
-HAVING COALESCE(SUM(i.quantity),0) < p.threshold
 ORDER BY p.name;
 
 Observation: name|barcode|total_quantity|threshold
 Widget A|12345|4|10
-Cable|99999|0|5
-
-Thought: I have the products below threshold.
-Final Answer: Low stock:
-- Widget A (12345): total_quantity=4, threshold=10
-- Cable (99999): total_quantity=0, threshold=5
-
-Thought: I should log this action.
-Action: Log Tracker
-Action Input: Task Completed | Identified low stock items and emailed summary to boss.
-
-
+Cable|99999|0|5|8
 
 
 Conversation history:
@@ -150,12 +128,8 @@ inventory_agent = AgentExecutor(
 # ---------------------------
 def run_inventory_agent(user_input: str) -> str:
     result = inventory_agent.invoke({
-        "input": user_input,
-        "AGENT_NAME": AGENT_NAME,
-        "BOSS_NAME": BOSS_NAME
+        "input": user_input
     })
 
     final_answer = result.get("output", "")
-    if final_answer:
-        track_log_tool(f"Task Completed | {final_answer[:100]}")
     return final_answer

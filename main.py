@@ -1,9 +1,10 @@
 from agents.inventory_agent import run_inventory_agent
 
-run_inventory_agent(
+answer = run_inventory_agent(
     '''
-    check our inventory, identify low stock items where sum(quantity) below threshold level, 
-    search for suppliers for our low stock items if there is any lowstock item.
-    send me an email summary of the low stock items and the suppliers with links.
+    check our inventory and tell me what we have and the threshold.
+    search the web and find potential suppliers for inventory.
     '''
-)
+    )
+
+print(answer)

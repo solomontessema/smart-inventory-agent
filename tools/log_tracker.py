@@ -5,24 +5,10 @@ from config import DB_PATH
 
  
 def track_log(action: str, details: str = "") -> str:
- 
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-
-    timestamp = datetime.now().isoformat()
-    cursor.execute(
-        "INSERT INTO logs (timestamp, action, details) VALUES (?, ?, ?)",
-        (timestamp, action, details)
-    )
-
-    conn.commit()
-    conn.close()
-
     return f"Logged action: {action}"
 
 
 def track_log_tool(input: str) -> str:
-    # Expect input like "Queried inventory | Checked products below threshold"
     try:
         action, details = input.split(" | ", 1)
     except ValueError:
