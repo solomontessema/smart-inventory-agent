@@ -21,15 +21,6 @@ llm = ChatOpenAI(
 )
 
 # ---------------------------
-# Memory
-# ---------------------------
-memory = ConversationBufferMemory(
-    memory_key="chat_history",
-    return_messages=True,
-    input_key="input"
-)
-
-# ---------------------------
 # Tools
 # ---------------------------
 tools = [
@@ -59,7 +50,7 @@ tools = [
 # Prompt
 # ---------------------------
 prompt_template = PromptTemplate(
-    input_variables=["input", "chat_history", "agent_scratchpad", "tools", "tool_names"],
+    input_variables=["input", "agent_scratchpad", "tools", "tool_names"],
     template="""
 You are an inventory assistant
 You have tools:
@@ -99,8 +90,6 @@ Widget A|12345|4|10
 Cable|99999|0|5|8
 
 
-Conversation history:
-{chat_history}
 
 User query: {input}
 
@@ -116,7 +105,6 @@ agent = create_react_agent(llm=llm, tools=tools, prompt=prompt_template)
 inventory_agent = AgentExecutor(
     agent=agent,
     tools=tools,
-    memory=memory,
     verbose=False,
     handle_parsing_errors=True,
     max_iterations=30,

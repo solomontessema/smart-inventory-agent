@@ -4,7 +4,6 @@ from tools.db_connector import SQLiteConnector
 
 connector = SQLiteConnector()
 
-
 def _exec_sql(sql: str) -> Tuple[List[str], List[Tuple[Any, ...]]]:
     cur = connector.conn.cursor()
     cur.execute(sql)
