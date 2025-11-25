@@ -2,6 +2,7 @@ from langchain.agents import Tool, AgentExecutor, create_react_agent
 from langchain_community.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
 from tools.web_search_tool import web_search_tool
+from tools.database_reader import read_database_tool
 from config import OPENAI_API_KEY 
 
 llm = ChatOpenAI(
@@ -16,7 +17,12 @@ tools = [
         name="Supplier Finder",
         func=web_search_tool,
         description="Search suppliers by product name, barcode, or category."
-    )
+    ),
+    Tool(
+        name="Database Reader",
+        func=read_database_tool,
+        description="Execute a SQL query and return raw tabular results. Use for inventory & thresholds."
+    ),
 ]
 
 
@@ -25,7 +31,7 @@ prompt_template = PromptTemplate(
     template="""
 You are a helpful assistant. You have access to the following tools:
 {tools}
-
+To answer inventory questions use products and inventory tables. Join them if needed.
 The user's query is: {input}
 
 You must follow the ReAct format:
