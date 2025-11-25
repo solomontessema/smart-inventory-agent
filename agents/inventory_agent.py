@@ -5,12 +5,22 @@ from tools.web_search_tool import web_search_tool
 from tools.database_reader import read_database_tool
 from tools.email_sender import send_email_tool
 from config import OPENAI_API_KEY 
+from langchain.memory import ConversationBufferMemory  # we need this to create conversational agent.
 
 llm = ChatOpenAI(
     model="gpt-4o-mini",
     temperature=0,
     api_key=OPENAI_API_KEY
 )
+
+
+#------------------------------------
+memory = ConversationBufferMemory(
+    memory_key="chat_history",
+    return_messages=True,
+    input_key="input"
+)
+#------------------------------------
 
 
 tools = [
@@ -40,6 +50,9 @@ You are a helpful assistant. You have access to the following tools:
 To answer inventory questions use products and inventory tables. Join them if needed.
 The user's query is: {input}
 
+Conversation history:  # add this
+{chat_history}
+
 You must follow the ReAct format:
 Thought: I need to determine which tool to use.
 Action: [tool_name]
@@ -64,6 +77,7 @@ agent = create_react_agent(llm=llm, tools=tools, prompt=prompt_template)
 inventory_agent = AgentExecutor(
     agent=agent,
     tools=tools,
+    memory=memory,   # add this
     verbose=True, 
     handle_parsing_errors=True,
 )
@@ -75,4 +89,7 @@ def run_inventory_agent(user_input: str) -> str:
         "input": user_input 
     })
     return result.get("output", "")
+
+
+
 
