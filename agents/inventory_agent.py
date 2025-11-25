@@ -14,7 +14,6 @@ llm = ChatOpenAI(
     api_key=OPENAI_API_KEY
 )
 
-
 #------------------------------------
 memory = ConversationBufferMemory(
     memory_key="chat_history",
