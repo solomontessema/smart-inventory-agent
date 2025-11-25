@@ -4,6 +4,7 @@ from langchain.prompts import PromptTemplate
 from tools.web_search_tool import web_search_tool
 from tools.database_reader import read_database_tool
 from tools.email_sender import send_email_tool
+from tools.log_tracker import track_log_tool
 from config import OPENAI_API_KEY 
 from langchain.memory import ConversationBufferMemory  # we need this to create conversational agent.
 
@@ -39,7 +40,12 @@ tools = [
         func=send_email_tool,
         description="Send an email using: subject || body"
     ),
-]
+        Tool(
+            name="Log Tracker",
+            func=track_log_tool,
+            description="Record actions/results for auditing & debugging."
+        ),
+    ]
 
 
 prompt_template = PromptTemplate(
