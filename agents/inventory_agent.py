@@ -3,6 +3,7 @@ from langchain_community.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
 from tools.web_search_tool import web_search_tool
 from tools.database_reader import read_database_tool
+from tools.email_sender import send_email_tool
 from config import OPENAI_API_KEY 
 
 llm = ChatOpenAI(
@@ -22,6 +23,11 @@ tools = [
         name="Database Reader",
         func=read_database_tool,
         description="Execute a SQL query and return raw tabular results. Use for inventory & thresholds."
+    ),
+        Tool(
+        name="Email Sender",
+        func=send_email_tool,
+        description="Send an email using: subject || body"
     ),
 ]
 
@@ -43,6 +49,10 @@ Observation: [Tool result]
 Thought: I have the final answer.
 Final Answer: [The answer to the user]
 
+When using the Email Sender tool:
+- Your name is Agent Smith. Address the recipients as "Team"
+- Format the body as professional HTML. Use clear title and heading. Include sentences, table of summary, and greetings
+
 Available tool names: {tool_names}
 
 {agent_scratchpad}
@@ -62,7 +72,7 @@ inventory_agent = AgentExecutor(
 def run_inventory_agent(user_input: str) -> str:
     """Invokes the agent with a user query."""
     result = inventory_agent.invoke({
-        "input": user_input,
+        "input": user_input 
     })
     return result.get("output", "")
 
