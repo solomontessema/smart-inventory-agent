@@ -8,7 +8,7 @@ HTML = """
   <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   </head>
-  <body style="background:url('https://s3-alpha.figma.com/hub/file/3023351490/29df311f-b685-45e4-822d-042b93ad6b53-cover.png') no-repeat center top; background-size:cover;">
+  <body style="background:url('https://cdn.ionnova.com/img/lessons/agentic_ai/grocry_store.png') no-repeat center top; background-size:cover;">
     <div class="container-fluid">
       <div class="card position-fixed bottom-0 end-0 m-3 shadow" style="width: 22rem;">
         <div class="card-header bg-primary text-white">
