@@ -4,6 +4,7 @@ from langchain.prompts import PromptTemplate
 from tools.web_search_tool import web_search_tool
 from tools.database_reader import read_database_tool
 from tools.email_sender import send_email_tool
+from tools.log_tracker import track_log_tool
 from config import OPENAI_API_KEY 
 
 llm = ChatOpenAI(
@@ -29,6 +30,11 @@ tools = [
         func=send_email_tool,
         description="Send an email using: subject || body"
     ),
+        Tool(
+        name="Log Tracker",
+        func=track_log_tool,
+        description="Record actions/results for auditing & debugging."
+    ),
 ]
 
 
@@ -52,6 +58,31 @@ Final Answer: [The answer to the user]
 When using the Email Sender tool:
 - Your name is Agent Smith. Address the recipients as "Team"
 - Format the body as professional HTML. Use clear title and heading. Include sentences, table of summary, and greetings
+
+After any task:
+- Use the "Log Tracker" tool to log the task and the action commited.
+
+Example (for low stock):
+Thought: I should run a single SQL that computes total quantities vs thresholds.
+Action: Database Reader
+Action Input: SELECT p.name, p.barcode, COALESCE(SUM(i.quantity),0) AS total_quantity, p.threshold
+FROM products p LEFT JOIN inventory i ON i.barcode = p.barcode
+GROUP BY p.name, p.barcode, p.threshold
+HAVING COALESCE(SUM(i.quantity),0) < p.threshold
+ORDER BY p.name;
+
+Observation: name|barcode|total_quantity|threshold
+Widget A|12345|4|10
+Cable|99999|0|5
+
+Thought: I have the products below threshold.
+Final Answer: Low stock:
+- Widget A (12345): total_quantity=4, threshold=10
+- Cable (99999): total_quantity=0, threshold=5
+
+Thought: I should log this action.
+Action: Log Tracker
+Action Input: Task Completed | Identified low stock items and emailed summary to boss.
 
 Available tool names: {tool_names}
 
