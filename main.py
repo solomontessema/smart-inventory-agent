@@ -1,11 +1,8 @@
-from agents.inventory_agent import run_inventory_agent
+from agents.inventory_agent import run_chat
 
-run_inventory_agent(
-    '''
-    check our inventory, identify low stock items where sum(quantity) below threshold level, 
-    search for suppliers for our low stock items if there is any lowstock item.
-    send me an email summary of the low stock items and the suppliers with links. 
-    '''
-)
- 
-
+while True:
+    user_question = input("Enter your message: ")
+    if user_question.lower() == "exit":
+        break
+    response = run_chat(user_question)
+    print(response)

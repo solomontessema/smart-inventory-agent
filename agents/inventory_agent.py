@@ -1,28 +1,23 @@
-from langchain.agents import Tool, AgentExecutor, create_react_agent
-from langchain_community.chat_models import ChatOpenAI
-from langchain.prompts import PromptTemplate
+from langchain.agents import create_agent
+from langchain_core.tools import Tool
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import PromptTemplate
+from langchain.agents.middleware import SummarizationMiddleware
+from langgraph.checkpoint.memory import InMemorySaver
+from langchain_core.messages import HumanMessage, SystemMessage
 from tools.web_search_tool import web_search_tool
 from tools.database_reader import read_database_tool
 from tools.email_sender import send_email_tool
 from tools.log_tracker import track_log_tool
 from config import OPENAI_API_KEY 
-from langchain.memory import ConversationBufferMemory   
+ 
 
 llm = ChatOpenAI(
     model="gpt-4o-mini",
     temperature=0,
     api_key=OPENAI_API_KEY
 )
-
-#------------------------------------
-memory = ConversationBufferMemory(
-    memory_key="chat_history",
-    return_messages=True,
-    input_key="input"
-)
-#------------------------------------
-
-
+ 
 tools = [
     Tool(
         name="Supplier Finder",
@@ -45,6 +40,12 @@ tools = [
             description="Record actions/results for auditing & debugging."
         ),
     ]
+
+summarization_middleware = SummarizationMiddleware(
+    model="gpt-4o-mini",
+    trigger=('tokens', 1000),
+    keep=('messages', 5),
+)
 
 
 prompt_template = PromptTemplate(
@@ -80,23 +81,24 @@ Available tool names: {tool_names}
 """
 )
 
-agent = create_react_agent(llm=llm, tools=tools, prompt=prompt_template)
+chat_agent = create_agent(
+    model=llm, 
+    tools=tools, 
+    system_prompt=prompt_template,
+    middleware=[summarization_middleware],
+    checkpointer=InMemorySaver(),
+    )
 
-inventory_agent = AgentExecutor(
-    agent=agent,
-    tools=tools,
-    memory=memory,   # add this
-    verbose=True, 
-    handle_parsing_errors=True,
-)
+ 
+def run_chat(user_input: str):
+    config = {"configurable": {"thread_id": "1001"}}
+    response = chat_agent.invoke(
+        {"messages": [HumanMessage(content=user_input)]},
+        config=config,
+    )
 
-
-def run_inventory_agent(user_input: str) -> str:
-    """Invokes the agent with a user query."""
-    result = inventory_agent.invoke({
-        "input": user_input 
-    })
-    return result.get("output", "")
+    ai_response = response["messages"][-1].content
+    return ai_response
 
 
 
