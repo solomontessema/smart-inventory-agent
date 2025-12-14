@@ -2,6 +2,7 @@ from langchain.agents import create_agent
 from langchain_openai import ChatOpenAI
 from tools.web_search_tool import web_search_tool
 from tools.database_reader import read_database_tool
+from tools.email_sender import send_email_tool
 from config import OPENAI_API_KEY 
 
 llm = ChatOpenAI(
@@ -12,7 +13,7 @@ llm = ChatOpenAI(
 
 inventory_agent = create_agent(
     model=llm, 
-    tools=[web_search_tool,read_database_tool], 
+    tools=[web_search_tool,read_database_tool,send_email_tool], 
     system_prompt="You are a helpful assistant."
     )
 
