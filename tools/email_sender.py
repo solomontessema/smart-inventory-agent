@@ -7,7 +7,7 @@ from langchain.tools import tool
 from config import (
     AGENT_EMAIL_ADDRESS,
     AGENT_EMAIL_PASSWORD,
-    BOSS_EMAIL_ADDRESS
+    RECIPIENT_EMAIL_ADDRESS
 )
 
 # If not in config, define fallbacks:
@@ -46,12 +46,12 @@ def send_email(
 
 @tool
 def send_email_tool(input_str: str) -> str:
-    """Send an email to the boss. Input format: 'subject || body'."""
+    """Send an email to the recipient. Input format: 'subject || body'."""
     subject, body = [x.strip() for x in input_str.split("||", 1)]
 
     try:
         result = send_email(
-            to_address=BOSS_EMAIL_ADDRESS,
+            to_address=RECIPIENT_EMAIL_ADDRESS,
             subject=subject,
             body=body
         )
