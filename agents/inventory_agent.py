@@ -5,6 +5,7 @@ from tools.database_reader import read_database_tool
 from tools.email_sender import send_email_tool
 from tools.log_tracker import track_log_tool
 from config import OPENAI_API_KEY 
+from config import AGENT_NAME
 
 llm = ChatOpenAI(
     model="gpt-4o-mini",
@@ -15,7 +16,8 @@ llm = ChatOpenAI(
 inventory_agent = create_agent(
     model=llm, 
     tools=[web_search_tool,read_database_tool,send_email_tool,track_log_tool], 
-    system_prompt="""You are a helpful assistant to manage inventory and find bulk suppliers online for products in the database. 
-    when sending email, format it well with greetings and signature. Format it well as html. After completing the requested task, log your actions using the track_log_tool.""",
+    system_prompt=f"""You are a helpful assistant to manage inventory and find bulk suppliers online for products in the database. 
+    when replying, use well formatted markdown.
+    when sending email, format it well with greetings and signature your name is {AGENT_NAME}. Format it well as html. After completing the requested task, log your actions using the track_log_tool.""",
     )
 
