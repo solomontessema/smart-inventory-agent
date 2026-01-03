@@ -1,8 +1,8 @@
 import streamlit as st
 from agents.inventory_agent import inventory_agent
 
-st.set_page_config(page_title="Inventory Agent Chat", layout="centered")
-st.title("📦 Inventory Agent Chat")
+st.set_page_config(page_title="Chat with Inventory Agent", layout="centered")
+st.title("📦 Chat with Inventory Agent")
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -29,4 +29,4 @@ if user_input:
 
     st.session_state.messages.append({"role": "assistant", "content": agent_text})
     with st.chat_message("assistant"):
-        st.markdown(agent_text, unsafe_allow_html=True)
+        st.markdown(agent_text)
