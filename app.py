@@ -4,6 +4,7 @@ from agents.inventory_agent import inventory_agent
 st.set_page_config(page_title="Chat with Inventory Agent", layout="centered")
 st.title("📦 Chat with Inventory Agent")
 
+
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
