@@ -9,4 +9,5 @@ logs/
 .coverage
 .cache/
 *.log
-*.tmp
+*.tmpd
+database/
