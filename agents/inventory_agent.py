@@ -7,8 +7,6 @@ from tools.log_tracker import track_log_tool
 from config import OPENAI_API_KEY 
 from config import AGENT_NAME
 
-AGENT_NAME = AGENT_NAME
-
 llm = ChatOpenAI(
     model="gpt-4o-mini",
     temperature=0
