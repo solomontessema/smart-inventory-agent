@@ -10,4 +10,3 @@ logs/
 .cache/
 *.log
 *.tmp
-database/
