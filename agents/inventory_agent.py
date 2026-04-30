@@ -5,7 +5,7 @@ from langchain_openai import ChatOpenAI
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from config import AGENT_NAME, OPENAI_API_KEY
 
-MCP_SERVER_DIR = r"C:\Users\solom\OneDrive\Documents\Projects\my-mcp-server-python"
+MCP_SERVER_DIR = r"C:\Users\solom\OneDrive\Documents\Projects\my-mcp-server"
 MCP_SERVER_PATH = os.path.join(MCP_SERVER_DIR, "mcp-server.py")
 MCP_PYTHON = os.path.join(MCP_SERVER_DIR, "venv", "Scripts", "python.exe")
 
